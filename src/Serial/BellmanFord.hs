@@ -1,4 +1,4 @@
-module Serial.BellmanFord (Cost(..), CostMap, NodeCost(..), findCostsOfArcNodes) where
+module Serial.BellmanFord (Cost(..), CostMap, NodeCost(..), findCostsOfArcNodes, relaxCost) where
 
 import Serial.Graph (Graph, Node, Arc(..), Graph(..), getNodes);
 
@@ -25,21 +25,21 @@ initCosts (Graph as) n =
 -- Relax the v vertex with given (u,v) and currect cost of v given
 -- Arguments: Arc, Cost of u, Cost of v
 -- Return: updated (or not) cost of v
-relaxCost :: Arc -> Cost -> Cost -> Cost
+relaxCost :: Arc -> Cost -> NodeCost -> NodeCost
 
 -- Case: to fill the non-exhaustivesness
-relaxCost _ Infinity Infinity = Infinity
 relaxCost (Arc _ w _) Infinity vCost = vCost
 
 -- Case: vCost is infinity
-relaxCost (Arc _ w _) (Cost uCost) Infinity = Cost (w + uCost)
+relaxCost (Arc u w _) (Cost uCost) (NodeCost v Infinity _) = NodeCost v (Cost (w + uCost)) (Just u)
 -- Case: vCost is present
-relaxCost (Arc v w u) (Cost uCost) (Cost vCost)
-    | newPath < vCost = Cost newPath
-    | otherwise = Cost vCost
+relaxCost (Arc u w v) (Cost uCost) (NodeCost _ (Cost vCost) parent)
+    | newPath < vCost = NodeCost v (Cost newPath) (Just u)
+    | otherwise = NodeCost v (Cost vCost) parent
     where newPath = uCost + w
 
 
+-- Finds Costs of nodes of given Arc in the given CostMap
 findCostsOfArcNodes :: Arc -> CostMap -> (Cost, Cost)
 findCostsOfArcNodes (Arc u _ v) costMap =
     (
