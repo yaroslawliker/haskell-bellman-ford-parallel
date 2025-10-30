@@ -11,7 +11,7 @@ type Node = Int
 
 data Arc = Arc Node Int Node
 
-data Graph = Graph [Arc]
+newtype Graph = Graph [Arc]
 
 -- Getters
 arcs :: Graph -> [Arc]
