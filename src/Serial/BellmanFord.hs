@@ -1,4 +1,4 @@
-module Serial.BellmanFord (Cost(..), initCosts, relaxCost) where
+module Serial.BellmanFord (Cost(..), CostMap, NodeCost(..), findCostsOfArcNodes) where
 
 import Serial.Graph (Graph, Node, Arc(..), Graph(..), getNodes);
 
@@ -7,18 +7,17 @@ data Cost = Cost Int | Infinity deriving(Show)
 -- NodeCost, fields for Current node, cost to reach from s, parent node
 data NodeCost = NodeCost Node Cost (Maybe Node) deriving(Show)
 
-data CostMap = CostMap [NodeCost] deriving(Show)
+type CostMap = [NodeCost]
 
 
 -- Initialize costs for Node
 initCosts :: Graph -> Node -> CostMap
-initCosts (Graph as) n = CostMap (
+initCosts (Graph as) n =
     [NodeCost x (
-        if x /= n 
-            then Infinity 
+        if x /= n
+            then Infinity
             else Cost 0)
         (Just 0) | x <- getNodes (Graph as)]
-    )
 
 --------
 -- relaxCost
@@ -29,7 +28,7 @@ initCosts (Graph as) n = CostMap (
 relaxCost :: Arc -> Cost -> Cost -> Cost
 
 -- Case: to fill the non-exhaustivesness
-relaxCost _ Infinity Infinity = Infinity 
+relaxCost _ Infinity Infinity = Infinity
 relaxCost (Arc _ w _) Infinity vCost = vCost
 
 -- Case: vCost is infinity
@@ -39,6 +38,19 @@ relaxCost (Arc v w u) (Cost uCost) (Cost vCost)
     | newPath < vCost = Cost newPath
     | otherwise = Cost vCost
     where newPath = uCost + w
+
+
+findCostsOfArcNodes :: Arc -> CostMap -> (Cost, Cost)
+findCostsOfArcNodes (Arc u _ v) costMap =
+    (
+    extractCost $ head (filter isFirst costMap),
+    extractCost $ head (filter isSecond costMap)
+    )
+    where
+        isFirst  (NodeCost node _ _ ) = u == node
+        isSecond (NodeCost node _ _ ) = v == node
+        extractCost (NodeCost _ cost _) = cost
+
 
 -- relaxAllNodes :: [NodeCost] -> [Arc] -> [NodeCost]
 -- relaxAllNodes costs arcs = 
