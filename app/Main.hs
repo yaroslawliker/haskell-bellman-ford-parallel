@@ -1,6 +1,6 @@
 module Main where
 
-import Graph (Arc(..), Graph(..), addArc, removeArc);
+import Serial.Graph (Arc(..), Graph(..), addArc, removeArc);
 
 
 main :: IO ()

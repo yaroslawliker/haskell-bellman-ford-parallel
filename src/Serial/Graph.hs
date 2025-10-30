@@ -1,4 +1,4 @@
-module Graph (Node, Arc(..), Graph(..), arcs, getNodes, addArc, removeArc) where
+module Serial.Graph (Node, Arc(..), Graph(..), arcs, getNodes, addArc, removeArc) where
 
 import Data.List
 
