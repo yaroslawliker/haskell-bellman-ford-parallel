@@ -40,11 +40,11 @@ relaxCost (Arc u w v) (Cost uCost) (NodeCost _ (Cost vCost) parent)
 
 
 -- Finds Costs of nodes of given Arc in the given CostMap
-findCostsOfArcNodes :: Arc -> CostMap -> (Cost, Cost)
+findCostsOfArcNodes :: Arc -> CostMap -> (NodeCost, NodeCost)
 findCostsOfArcNodes (Arc u _ v) costMap =
     (
-    extractCost $ head (filter isFirst costMap),
-    extractCost $ head (filter isSecond costMap)
+    head (filter isFirst costMap),
+    head (filter isSecond costMap)
     )
     where
         isFirst  (NodeCost node _ _ ) = u == node
