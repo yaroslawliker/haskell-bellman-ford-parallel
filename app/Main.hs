@@ -1,6 +1,7 @@
 module Main where
 
-import Serial.Graph (Arc(..), Graph(..), addArc, removeArc);
+import Serial.Graph (Node, Arc(..), Graph(..));
+import Serial.BellmanFord (Cost(..), initCosts, relaxCost);
 
 
 main :: IO ()
@@ -10,9 +11,18 @@ main = do
     -- 1 -- 7--> 3
     -- 2 -- 5--> 3
     let graph = Graph [Arc 1 10 2, Arc 1 7 3, Arc 2 5 3]
+    print graph
 
-     -- 2 -- 5--> 4
-    let graph1 = addArc (Arc 2 11 4) graph;
-    let graph2 = removeArc 1 graph1;
-    print graph2
+    print $ initCosts graph 1
+
+    -- Arc u->v 1 --(5)--> 2, cost(u) = 10, cost(v) = inf    => Should be 10+5
+    print $ relaxCost (Arc 1 5 2) (Cost 10) Infinity
+    -- Arc u->v 1 --(5)--> 2, cost(u) = 10, cost(v) = 11     => Should stay 11
+    print $ relaxCost (Arc 1 5 2) (Cost 10) (Cost 11)
+    -- Arc u->v 1 --(5)--> 2, cost(u) = 10, cost(v) = 17     => Should be 10+5
+    print $ relaxCost (Arc 1 5 2) (Cost 10) (Cost 17)
+
+
+    
+
     return ()
