@@ -1,4 +1,4 @@
-module Serial.BellmanFord (Cost(..), CostMap, NodeCost(..), initCosts, findCostsOfArcNodes, relaxCost, findDublicatesOfNode, removeDuplicates ) where
+module Serial.BellmanFord (Cost(..), CostMap, NodeCost(..), initCosts, relaxAllNodes ) where
 
 import Data.List (sortBy, groupBy)
 import Data.Ord (comparing)
@@ -74,22 +74,22 @@ removeDuplicates costMap =
         groupedByNode = groupBy ((==) `on` getNode) sortedCostMap
 
 
+relaxAllNodes :: CostMap -> Graph -> CostMap
+relaxAllNodes nodes (Graph arcs) = 
+    removeDuplicates
+        (nodes 
+        ++
+        [
+            relaxCost (Arc u w v) uCost vCostNode
+            | 
+            (Arc u w v) <- arcs,
 
--- relaxAllNodes :: CostMap -> Graph -> CostMap
--- relaxAllNodes nodes (Graph arcs) = 
---     [
---         relaxCost (Arc u w v) uCost vCostNode
---         | 
---         (Arc u w v) <- arcs,
+            let costNodes = findCostsOfArcNodes (Arc u w v) nodes, 
+            let vCostNode = snd costNodes,
 
---         let costNodes = findCostsOfArcNodes (Arc u w v) nodes, 
---         let vCostNode = snd costNodes,
-
---         let uCostNode = fst costNodes,
---         let uCost = (\(NodeCost _ cost _) -> cost) uCostNode
---     ]
-
-
+            let uCostNode = fst costNodes,
+            let uCost = (\(NodeCost _ cost _) -> cost) uCostNode
+        ])
 
 -- bellmanFord :: Graph -> Node -> Maybe(CostMap)
 -- bellmanFord (Graph as) n =
