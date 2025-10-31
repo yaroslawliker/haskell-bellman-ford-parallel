@@ -37,3 +37,18 @@ relaxAllNodesParallel procN costMap (Graph arcs) =
 
         subTasks = zip costMaps subGraphs
 
+relaxNTimesParallel :: Int -> CostMap -> Graph -> Int -> CostMap
+relaxNTimesParallel _ costMap _ 0 = costMap
+relaxNTimesParallel procN costMap graph n = relaxNTimesParallel 
+    procN 
+    (relaxAllNodesParallel procN costMap graph)
+    graph 
+    (n-1)
+
+bellmanFordParralel :: Int -> Graph -> Node -> Maybe(CostMap)
+bellmanFordParralel procN graph node =
+    Just $ relaxNTimesParallel procN inits graph (n-1)
+
+    where
+        inits = initCosts graph node
+        n = length $ getNodes graph
