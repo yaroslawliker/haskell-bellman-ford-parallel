@@ -1,11 +1,11 @@
-module Serial.BellmanFord (CostMap, bellmanFord, relaxAllNodes, removeDuplicates, initCosts) where
+module BellmanFord (CostMap, bellmanFord, relaxAllNodes, removeDuplicates, initCosts) where
 
 import Data.List (sortBy, groupBy)
 import Data.Ord (comparing)
 import Data.Function (on)
 import Control.DeepSeq (NFData (rnf))
 
-import Serial.Graph (Graph, Node, Arc(..), Graph(..), getNodes);
+import Graph (Graph, Node, Arc(..), Graph(..), getNodes);
 
 
 
@@ -62,7 +62,7 @@ initCosts (Graph as) n =
 relaxCost :: Arc -> Cost -> NodeCost -> NodeCost
 
 -- Case: to fill the non-exhaustivesness
-relaxCost (Arc _ w _) Infinity vCost = vCost
+relaxCost (Arc {}) Infinity vCost = vCost
 
 -- Case: vCost is infinity
 relaxCost (Arc u w _) (Cost uCost) (NodeCost v Infinity _) = NodeCost v (Cost (w + uCost)) (Just u)
@@ -98,16 +98,16 @@ removeDuplicates costMap =
 
 -- Relaxes all nodes of the graph, using it's arcs weights and the current costmap
 relaxAllNodes :: CostMap -> Graph -> CostMap
-relaxAllNodes nodes (Graph arcs) = 
+relaxAllNodes nodes (Graph arcs) =
     removeDuplicates
-        (nodes 
+        (nodes
         ++
         [
             relaxCost (Arc u w v) uCost vCostNode
-            | 
+            |
             (Arc u w v) <- arcs,
 
-            let costNodes = findCostsOfArcNodes (Arc u w v) nodes, 
+            let costNodes = findCostsOfArcNodes (Arc u w v) nodes,
             let vCostNode = snd costNodes,
 
             let uCostNode = fst costNodes,

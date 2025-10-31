@@ -1,9 +1,9 @@
-module Parallel.ParallelBellmanFord (bellmanFordParralel) where
+module ParallelBellmanFord (bellmanFordParralel) where
 
 import Control.Parallel.Strategies ( parMap, rdeepseq );
 
-import Serial.Graph (Graph(..), Node, getNodes)
-import Serial.BellmanFord (CostMap, relaxAllNodes, removeDuplicates, initCosts);
+import Graph (Graph(..), Node, getNodes)
+import BellmanFord (CostMap, relaxAllNodes, removeDuplicates, initCosts);
 
 
 

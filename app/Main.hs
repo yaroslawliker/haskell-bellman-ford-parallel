@@ -1,8 +1,8 @@
 module Main where
 
-import Serial.Graph (Arc(..), Graph(..));
-import Serial.BellmanFord (bellmanFord);
-import Parallel.ParallelBellmanFord (bellmanFordParralel)
+import Graph (Arc(..), Graph(..));
+import BellmanFord (bellmanFord);
+import ParallelBellmanFord (bellmanFordParralel)
 
 
 main :: IO ()
