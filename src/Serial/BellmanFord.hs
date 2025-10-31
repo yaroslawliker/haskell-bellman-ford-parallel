@@ -1,4 +1,4 @@
-module Serial.BellmanFord (Cost(..), CostMap, NodeCost(..), findCostsOfArcNodes, relaxCost) where
+module Serial.BellmanFord (Cost(..), CostMap, NodeCost(..), initCosts, findCostsOfArcNodes, relaxCost, relaxAllNodes) where
 
 import Serial.Graph (Graph, Node, Arc(..), Graph(..), getNodes);
 
@@ -16,8 +16,9 @@ initCosts (Graph as) n =
     [NodeCost x (
         if x /= n
             then Infinity
-            else Cost 0)
-        (Just 0) | x <- getNodes (Graph as)]
+            else Cost 0
+        )
+        Nothing | x <- getNodes (Graph as)]
 
 --------
 -- relaxCost
