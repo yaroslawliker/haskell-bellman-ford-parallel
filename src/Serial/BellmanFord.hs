@@ -1,4 +1,4 @@
-module Serial.BellmanFord (Cost(..), CostMap, NodeCost(..), initCosts, relaxAllNodes ) where
+module Serial.BellmanFord (Cost(..), CostMap, NodeCost(..), initCosts, relaxNTimes, bellmanFord ) where
 
 import Data.List (sortBy, groupBy)
 import Data.Ord (comparing)
@@ -91,7 +91,17 @@ relaxAllNodes nodes (Graph arcs) =
             let uCost = (\(NodeCost _ cost _) -> cost) uCostNode
         ])
 
--- bellmanFord :: Graph -> Node -> Maybe(CostMap)
--- bellmanFord (Graph as) n =
---      let ics = initCosts (Graph as) n
---      in 
+relaxNTimes :: CostMap -> Graph -> Int -> CostMap
+relaxNTimes costMap _ 0 = costMap
+relaxNTimes costMap graph n = relaxNTimes (relaxAllNodes costMap graph) graph (n-1)
+
+
+bellmanFord :: Graph -> Node -> Maybe(CostMap)
+bellmanFord graph node =
+    Just $ relaxNTimes inits graph (n-1)
+
+    where
+        inits = initCosts graph node
+        n = length $ getNodes graph
+
+
