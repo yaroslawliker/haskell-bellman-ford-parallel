@@ -1,12 +1,11 @@
-module Parallel.ParallelBellmanFord (relaxAllNodesParallel, bellmanFordParralel) where
+module Parallel.ParallelBellmanFord (bellmanFordParralel) where
 
-import Control.Parallel.Strategies;
+import Control.Parallel.Strategies ( parMap, rdeepseq );
 
 import Serial.Graph (Graph(..), Node, getNodes)
+import Serial.BellmanFord (CostMap, relaxAllNodes, removeDuplicates, initCosts);
 
-import Serial.BellmanFord (
-    CostMap(..),
-    relaxAllNodes, removeDuplicates, initCosts);
+
 
 -- Takes sub-costmap, a full graph and returns an update costmap
 relaxAllNodesWrapper :: (CostMap, Graph) -> CostMap
@@ -37,6 +36,10 @@ relaxAllNodesParallel procN costMap (Graph arcs) =
 
         subTasks = zip costMaps subGraphs
 
+
+-- Paralelly relaxes the costmap n times splitting the work amoung procN processes
+-- Takes the processors number, a costmap, a graph and relaxing iterations amount
+-- Returns the relaxed costmap
 relaxNTimesParallel :: Int -> CostMap -> Graph -> Int -> CostMap
 relaxNTimesParallel _ costMap _ 0 = costMap
 relaxNTimesParallel procN costMap graph n = relaxNTimesParallel 
@@ -45,9 +48,17 @@ relaxNTimesParallel procN costMap graph n = relaxNTimesParallel
     graph 
     (n-1)
 
-bellmanFordParralel :: Int -> Graph -> Node -> Maybe(CostMap)
+-- Parallel Bellmand-Ford shortest-path-finidng algorythm.
+-- Takes the number of processos, a Graph and the starting Node
+-- Returns a CostMap, consisting of NodeCosts (node, cost, parent) where
+--     - node is the current node (id or number)
+--     - cost is the weight of the path from the starting node to current
+--     - parent is the previous node on the path from the statring node to the current
+-- The algorythm does not account negative cycles.
+bellmanFordParralel :: Int -> Graph -> Node -> CostMap 
 bellmanFordParralel procN graph node =
-    Just $ relaxNTimesParallel procN inits graph (n-1)
+
+    relaxNTimesParallel procN inits graph (n-1)
 
     where
         inits = initCosts graph node

@@ -1,7 +1,7 @@
 module Main where
 
-import Serial.Graph (Node, Arc(..), Graph(..));
-import Serial.BellmanFord (Cost(..), CostMap, NodeCost (NodeCost), initCosts, relaxNTimes, bellmanFord, relaxAllNodes);
+import Serial.Graph (Arc(..), Graph(..));
+import Serial.BellmanFord (bellmanFord);
 import Parallel.ParallelBellmanFord (bellmanFordParralel)
 
 
