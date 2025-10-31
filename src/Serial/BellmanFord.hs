@@ -1,14 +1,20 @@
-module Serial.BellmanFord (Cost(..), CostMap, NodeCost(..), initCosts, relaxNTimes, bellmanFord ) where
+module Serial.BellmanFord (Cost(..), CostMap, NodeCost(..), initCosts, relaxCost, relaxAllNodes, relaxNTimes, bellmanFord, removeDuplicates) where
 
 import Data.List (sortBy, groupBy)
 import Data.Ord (comparing)
 import Data.Function (on)
 import Serial.Graph (Graph, Node, Arc(..), Graph(..), getNodes);
+import Control.DeepSeq (NFData (rnf))
 
 data Cost = Cost Int | Infinity deriving (Show, Eq, Ord)
+instance NFData Cost where
+  rnf (Cost x) = rnf x
+  rnf Infinity = ()
 
 -- NodeCost, fields for Current node, cost to reach from s, parent node
 data NodeCost = NodeCost Node Cost (Maybe Node) deriving(Show, Eq)
+instance NFData NodeCost where
+  rnf (NodeCost node cost maybeNode) = rnf node `seq` rnf cost `seq` rnf maybeNode
 
 instance Ord NodeCost where
   (NodeCost _ cost1 _) <= (NodeCost _ cost2 _) = cost1 <= cost2
@@ -60,11 +66,6 @@ findCostsOfArcNodes (Arc u _ v) costMap =
     where
         isFirst  (NodeCost node _ _ ) = u == node
         isSecond (NodeCost node _ _ ) = v == node
-
--- Find dublicates of the given node in a CostMap
-findDublicatesOfNode :: CostMap -> Node -> CostMap
-findDublicatesOfNode costMap node = filter isOfGivenNode costMap
-    where isOfGivenNode (NodeCost n _ _) = n == node
 
 removeDuplicates :: CostMap -> CostMap
 removeDuplicates costMap =
