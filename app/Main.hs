@@ -8,16 +8,17 @@ main :: IO ()
 main = do
     putStrLn "Graph"
 
-    -- 1 --(5)--> 2
-    -- 1 --(7)--> 3
-    -- 2 --(10)--> 4
-    -- 3 --(1)--> 4
-    -- 3 --(2)--> 5
-    -- 5 --(4)--> 6
-    let graph = Graph [Arc 1 5 2, Arc 1 7 3, Arc 2 10 4, Arc 3 1 4, Arc 3 2 5, Arc 5 4 6]
+    -- 1 --(2)--> 2
+    -- 1 --(5)--> 4
+    -- 1 --(10)--> 6
+    -- 2 --(4)--> 3
+    -- 3 --(3)--> 5
+    -- 4 --(8)--> 5
+    -- 5 --(-4)--> 6
+    let graph = Graph [Arc 1 2 2, Arc 1 5 4, Arc 1 10 6, Arc 2 4 3, Arc 3 3 5, Arc 4 8 5, Arc 5 (-4) 6]
 
     print "Solved:"
-    let solved = bellmanFord graph 3
+    let solved = bellmanFord graph 1
     print solved
     
     return ()
