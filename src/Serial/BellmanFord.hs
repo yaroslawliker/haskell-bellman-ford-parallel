@@ -1,11 +1,17 @@
-module Serial.BellmanFord (Cost(..), CostMap, NodeCost(..), initCosts, findCostsOfArcNodes, relaxCost, relaxAllNodes) where
+module Serial.BellmanFord (Cost(..), CostMap, NodeCost(..), initCosts, findCostsOfArcNodes, relaxCost, findDublicatesOfNode, removeDuplicates ) where
 
+import Data.List (sortBy, groupBy)
+import Data.Ord (comparing)
+import Data.Function (on)
 import Serial.Graph (Graph, Node, Arc(..), Graph(..), getNodes);
 
-data Cost = Cost Int | Infinity deriving(Show)
+data Cost = Cost Int | Infinity deriving (Show, Eq, Ord)
 
 -- NodeCost, fields for Current node, cost to reach from s, parent node
-data NodeCost = NodeCost Node Cost (Maybe Node) deriving(Show)
+data NodeCost = NodeCost Node Cost (Maybe Node) deriving(Show, Eq)
+
+instance Ord NodeCost where
+  (NodeCost _ cost1 _) <= (NodeCost _ cost2 _) = cost1 <= cost2
 
 type CostMap = [NodeCost]
 
@@ -19,6 +25,10 @@ initCosts (Graph as) n =
             else Cost 0
         )
         Nothing | x <- getNodes (Graph as)]
+
+-- Getter for NodeCost
+getNode :: NodeCost -> Node
+getNode (NodeCost n _ _) = n
 
 --------
 -- relaxCost
@@ -56,13 +66,28 @@ findDublicatesOfNode :: CostMap -> Node -> CostMap
 findDublicatesOfNode costMap node = filter isOfGivenNode costMap
     where isOfGivenNode (NodeCost n _ _) = n == node
 
--- removeDublicats :: CostMap -> CostMap
--- removeDublicats costMap = 
+removeDuplicates :: CostMap -> CostMap
+removeDuplicates costMap =
+    map minimum groupedByNode
+    where
+        sortedCostMap = sortBy (comparing getNode) costMap
+        groupedByNode = groupBy ((==) `on` getNode) sortedCostMap
 
 
 
--- relaxAllNodes :: [NodeCost] -> [Arc] -> [NodeCost]
--- relaxAllNodes costs arcs = 
+-- relaxAllNodes :: CostMap -> Graph -> CostMap
+-- relaxAllNodes nodes (Graph arcs) = 
+--     [
+--         relaxCost (Arc u w v) uCost vCostNode
+--         | 
+--         (Arc u w v) <- arcs,
+
+--         let costNodes = findCostsOfArcNodes (Arc u w v) nodes, 
+--         let vCostNode = snd costNodes,
+
+--         let uCostNode = fst costNodes,
+--         let uCost = (\(NodeCost _ cost _) -> cost) uCostNode
+--     ]
 
 
 
