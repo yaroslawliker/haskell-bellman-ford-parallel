@@ -50,7 +50,15 @@ findCostsOfArcNodes (Arc u _ v) costMap =
     where
         isFirst  (NodeCost node _ _ ) = u == node
         isSecond (NodeCost node _ _ ) = v == node
-        extractCost (NodeCost _ cost _) = cost
+
+-- Find dublicates of the given node in a CostMap
+findDublicatesOfNode :: CostMap -> Node -> CostMap
+findDublicatesOfNode costMap node = filter isOfGivenNode costMap
+    where isOfGivenNode (NodeCost n _ _) = n == node
+
+-- removeDublicats :: CostMap -> CostMap
+-- removeDublicats costMap = 
+
 
 
 -- relaxAllNodes :: [NodeCost] -> [Arc] -> [NodeCost]
