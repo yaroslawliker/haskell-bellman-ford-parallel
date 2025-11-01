@@ -65,7 +65,8 @@ executable lab2
     other-modules: Graph,
                    BellmanFord,
                    ParallelBellmanFord,
-                   RandomGraph
+                   RandomGraph,
+                   RunCompairingsIO
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:

@@ -2,7 +2,8 @@ module RandomGraph (generateRandomGraph) where
 
 
 import System.Random (StdGen,randomR)
-import Data.List (nubBy)
+import Data.List (nubBy, sortBy)
+import Data.Ord (comparing)
 
 import Graph(Graph(..), Arc(..), Node)
 
@@ -54,6 +55,12 @@ removeDuplicativeArcs = nubBy areEndNodesEqual
     areEndNodesEqual (Arc u1 _ v1) (Arc u2 _ v2) =
       u1 == u2 && v1 == v2
 
+sortArcsByNode :: [Arc] -> [Arc]
+sortArcsByNode = sortBy (comparing getSortKey)
+    where
+        getSortKey :: Arc -> (Node, Node)
+        getSortKey (Arc u _ v) = (u, v)
+
 -- Generates random graph with given parameters
 -- Takes nodes amount, arcs amount, minimal weight, maximum weight,
 -- whether remove duplicative arcs and the random generator
@@ -61,9 +68,10 @@ removeDuplicativeArcs = nubBy areEndNodesEqual
 generateRandomGraph :: Int -> Int -> Int -> Int -> Bool -> StdGen -> Graph
 generateRandomGraph nodeN arcN minWeight maxWeight removeDublicates g =
     if removeDublicates
-        then Graph (removeDuplicativeArcs arcs)
-        else Graph arcs
+        then Graph (removeDuplicativeArcs sorted)
+        else Graph sorted
     
     where
         nodes = [1..nodeN]
         (arcs, newG) = generateRandomNArcs nodes arcN (minWeight, maxWeight) g
+        sorted = sortArcsByNode arcs
