@@ -1,43 +1,52 @@
 module RandomGraph (generateRandomGraph) where
 
-import System.Random (randomRIO)
-import Control.Monad (replicateM)
+
+import System.Random (StdGen,randomR)
 import Data.List (nubBy)
 
 import Graph(Graph(..), Arc(..), Node)
 
 
-
-getRandomNode :: [Node] -> IO Node
-getRandomNode nodes = do
-    let nodeN = length nodes
-    randI <- randomRIO (0, nodeN-1)
-
-    let randNode = nodes !! randI
-    return randNode
+-- Generates random node from the given list and the generator
+getRandomNode :: [Node] -> StdGen -> (Node, StdGen)
+getRandomNode nodes g = (nodes !! randI, newG)
+    where
+        nodeN = length nodes
+        (randI, newG) = randomR (0, nodeN-1) g
 
 
-generateRandomArc :: [Node] -> Int -> Int -> IO Arc
-generateRandomArc nodes minWeight maxWeight = do
-    randU <- getRandomNode nodes
-    randV <- getRandomNode nodes
-    randW <- randomRIO (minWeight, maxWeight)
+-- Generates v different from u
+generateV :: [Node] -> Node -> StdGen -> (Node, StdGen)
+generateV nodes u g =
+    if vCandidate /= u
+        then (vCandidate, newG)
+        else generateV nodes u newG
+    where
+        nodeN = length nodes
+        (vCandidate, newG) = randomR (1, nodeN) g
 
-    if randU /= randV
-        then return (Arc randU randW randV)
-        else generateRandomArc nodes minWeight maxWeight
+-- Generates a random Arc (u, w, v), where u /= v, and w within weightRange
+generateRandomArc :: [Node] -> (Int, Int) -> StdGen -> (Arc, StdGen)
+generateRandomArc nodes weightRange g =  (Arc randU randW randV, newG3)
+    where
+        (randU, newG1) = getRandomNode nodes g
+        (randV, newG2) = generateV nodes randU newG1
+        (randW, newG3) = randomR weightRange newG2   
+
+-- Generates N random arcs from given nodes and weight between weightRange
+generateRandomNArcs :: [Node] -> Int -> (Int, Int) -> StdGen -> ([Arc], StdGen)
+generateRandomNArcs _ 0 _ g = ([], g)
+generateRandomNArcs nodes arcN weightRange g =
+    (arc : arcs, newG2)
+
+    where
+        (arc, newG) = generateRandomArc nodes weightRange g
+        (arcs, newG2) = generateRandomNArcs nodes (arcN - 1) weightRange newG
 
 
-generateRandomNArcs :: [Node] -> Int -> Int -> Int -> IO [Arc]
-generateRandomNArcs _ 0 _ _ = return []
-generateRandomNArcs nodes arcN minWeight maxWeight =
-    replicateM arcN (generateRandomArc nodes minWeight maxWeight)
--- more straigth forward solution:
---  do
-    -- arc <-generateRandomArc nodes minWeight maxWeight
-    -- arcs <- generateRandomNArcs nodes (arcN-1) minWeight maxWeight
-    -- return (arc:arcs)
-
+-- Removes dublicative arcs.
+-- Two arcs Arc1(u, w, v) and Arc2(u', w, v') are dublicative if
+-- u == u', v == v'
 removeDuplicativeArcs :: [Arc] -> [Arc]
 removeDuplicativeArcs = nubBy areEndNodesEqual
   where
@@ -45,13 +54,16 @@ removeDuplicativeArcs = nubBy areEndNodesEqual
     areEndNodesEqual (Arc u1 _ v1) (Arc u2 _ v2) =
       u1 == u2 && v1 == v2
 
-generateRandomGraph :: Int -> Int -> Int -> Int -> Bool -> IO Graph
-generateRandomGraph nodeN arcN minWeight maxWeight removeDublicates = do
-    let nodes = [1..nodeN]
-
-    arcs <- generateRandomNArcs nodes arcN minWeight maxWeight
-
+-- Generates random graph with given parameters
+-- Takes nodes amount, arcs amount, minimal weight, maximum weight,
+-- whether remove duplicative arcs and the random generator
+-- Returns a random graph
+generateRandomGraph :: Int -> Int -> Int -> Int -> Bool -> StdGen -> Graph
+generateRandomGraph nodeN arcN minWeight maxWeight removeDublicates g =
     if removeDublicates
-        then return (Graph (removeDuplicativeArcs arcs))
-        else return (Graph arcs) 
+        then Graph (removeDuplicativeArcs arcs)
+        else Graph arcs
     
+    where
+        nodes = [1..nodeN]
+        (arcs, newG) = generateRandomNArcs nodes arcN (minWeight, maxWeight) g
