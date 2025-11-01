@@ -1,6 +1,11 @@
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveAnyClass #-}
+
 module Graph (Node, Arc(..), Graph(..), arcs, getNodes, addArc, removeArc) where
 
 import Data.List
+import Control.DeepSeq (NFData)
+import GHC.Generics (Generic)
 
 -- This modules define oriented graphs, and operations on them.
 -- Negative values for nodes are forbidden.
@@ -11,9 +16,9 @@ import Data.List
 ----------
 type Node = Int
 
-data Arc = Arc Node Int Node deriving(Eq)
+data Arc = Arc Node Int Node deriving(Eq, Generic, NFData)
 
-newtype Graph = Graph [Arc]
+newtype Graph = Graph [Arc] deriving(Generic, NFData)
 
 ---------------
 -- Functions --
