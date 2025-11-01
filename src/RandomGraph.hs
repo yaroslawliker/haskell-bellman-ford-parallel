@@ -9,40 +9,38 @@ import Graph(Graph(..), Arc(..), Node)
 
 
 -- Generates random node from the given list and the generator
-getRandomNode :: [Node] -> StdGen -> (Node, StdGen)
-getRandomNode nodes g = (nodes !! randI, newG)
+getRandomNode :: Int -> StdGen -> (Node, StdGen)
+getRandomNode nodeN g = (randNode, newG)
     where
-        nodeN = length nodes
-        (randI, newG) = randomR (0, nodeN-1) g
+        (randNode, newG) = randomR (1, nodeN) g
 
 
 -- Generates v different from u
-generateV :: [Node] -> Node -> StdGen -> (Node, StdGen)
-generateV nodes u g =
+generateV :: Int -> Node -> StdGen -> (Node, StdGen)
+generateV nodeN u g =
     if vCandidate /= u
         then (vCandidate, newG)
-        else generateV nodes u newG
+        else generateV nodeN u newG
     where
-        nodeN = length nodes
         (vCandidate, newG) = randomR (1, nodeN) g
 
 -- Generates a random Arc (u, w, v), where u /= v, and w within weightRange
-generateRandomArc :: [Node] -> (Int, Int) -> StdGen -> (Arc, StdGen)
-generateRandomArc nodes weightRange g =  (Arc randU randW randV, newG3)
+generateRandomArc :: Int -> (Int, Int) -> StdGen -> (Arc, StdGen)
+generateRandomArc nodeN weightRange g =  (Arc randU randW randV, newG3)
     where
-        (randU, newG1) = getRandomNode nodes g
-        (randV, newG2) = generateV nodes randU newG1
-        (randW, newG3) = randomR weightRange newG2   
+        (randU, newG1) = getRandomNode nodeN g
+        (randV, newG2) = generateV nodeN randU newG1
+        (randW, newG3) = randomR weightRange newG2
 
 -- Generates N random arcs from given nodes and weight between weightRange
-generateRandomNArcs :: [Node] -> Int -> (Int, Int) -> StdGen -> ([Arc], StdGen)
+generateRandomNArcs :: Int -> Int -> (Int, Int) -> StdGen -> ([Arc], StdGen)
 generateRandomNArcs _ 0 _ g = ([], g)
-generateRandomNArcs nodes arcN weightRange g =
+generateRandomNArcs nodeN arcN weightRange g =
     (arc : arcs, newG2)
 
     where
-        (arc, newG) = generateRandomArc nodes weightRange g
-        (arcs, newG2) = generateRandomNArcs nodes (arcN - 1) weightRange newG
+        (arc, newG) = generateRandomArc nodeN weightRange g
+        (arcs, newG2) = generateRandomNArcs nodeN (arcN - 1) weightRange newG
 
 
 -- Removes dublicative arcs.
@@ -72,6 +70,5 @@ generateRandomGraph nodeN arcN minWeight maxWeight removeDublicates g =
         else Graph sorted
     
     where
-        nodes = [1..nodeN]
-        (arcs, newG) = generateRandomNArcs nodes arcN (minWeight, maxWeight) g
+        (arcs, newG) = generateRandomNArcs nodeN arcN (minWeight, maxWeight) g
         sorted = sortArcsByNode arcs
