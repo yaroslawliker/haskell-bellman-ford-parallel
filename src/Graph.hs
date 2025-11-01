@@ -11,7 +11,7 @@ import Data.List
 ----------
 type Node = Int
 
-data Arc = Arc Node Int Node
+data Arc = Arc Node Int Node deriving(Eq)
 
 newtype Graph = Graph [Arc]
 

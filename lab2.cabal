@@ -64,7 +64,8 @@ executable lab2
     -- Modules included in this executable, other than Main.
     other-modules: Graph,
                    BellmanFord,
-                   ParallelBellmanFord
+                   ParallelBellmanFord,
+                   RandomGraph
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
@@ -72,7 +73,8 @@ executable lab2
     -- Other library packages from which modules are imported.
     build-depends:    base ^>=4.18.3.0,
                       parallel,
-                      deepseq
+                      deepseq,
+                      random
 
     -- Directories containing source files.
     hs-source-dirs:   app,
