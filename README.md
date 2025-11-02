@@ -51,7 +51,7 @@ If you do so, make sure to read Set up section of this README first.
 Notations:
 * NodeN - number of nodes (vertices)
 * ArcN - number of arcs (edges)
-* genDuration - duration of the graph deneration
+* genDuration - time duration of the graph generation
 * speedUp = serialDuration / parallelDuration
 
 ### 2 processors
