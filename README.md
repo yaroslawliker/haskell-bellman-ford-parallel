@@ -48,7 +48,11 @@ You can change `-N4` to, for example, `-N2` or `-N8` to run, respectively, `2` o
 If you do so, make sure to read Set up section of this README first.
 
 ## Comparations
-
+Notations:
+* NodeN - number of nodes (vertices)
+* ArcN - number of arcs (edges)
+* genDuration - duration of the graph deneration
+* speedUp = serialDuration / parallelDuration
 
 ### 2 processors
 
