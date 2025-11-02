@@ -1,9 +1,9 @@
 ## Overview
-There are two implementations Bellman-Ford algorythm for searching the
+There are two implementations of Bellman-Ford algorythm for searching the
 shortest paths in a oriented graph: serial and parallel, written in Haskell.
 
-There are also convinient way to generate random graph and compare the
-algorythm's speed on different processors amount.
+There is also a convinient way to generate random graph and compare the
+algorythm's speed on different processors number.
 
 The algorythm search for shortest path from the starting node to all
 other nodes of the graph.
@@ -15,7 +15,7 @@ This project is made a the second lab of Functional Programming university cours
 ### Set up
 *You may skip this part*
 
-Before building you may want to go to app/Main.hs and change the variable 
+Before building you may want to open app/Main.hs and change the variable 
 `procN = 4` to a number of threads amoung which you want to split processing.
 
 Also, in app/Main.hs there are few examples like 
@@ -24,7 +24,7 @@ runCompairing 300 procN randomGenerator
 ``` 
 where `300` is number of graph nodes (vertices) to generate. You can specify your own
 amount of nodes by changing this number to anything you like. You also can
-the examples or add the one's you'd like.
+remove the examples or add the one's you'd like.
 
 Amount of arcs (edges) of the graph is calculated as nodeN * nodeN / 4.
 
@@ -76,7 +76,7 @@ If you do so, make sure to read Set up section of this README first.
 | 300 | 22500 | 1.188429897s | 7.467625416s | 3.748199342s | 1.99 |  
 
 ### Conclusion
-For all experiments the speedUp is biggest on medium data (100 nodes).
-The bigger speedUp is with use of 4 processors on medium data.
+For all experiments the speedUp is bigger on medium data (100 nodes).
+The biggeest speedUp is with use of 4 processors on medium data.
 
 
