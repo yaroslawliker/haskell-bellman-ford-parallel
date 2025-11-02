@@ -10,8 +10,8 @@ import RandomGraph (generateRandomGraph)
 import Control.DeepSeq (deepseq)
 import Text.Printf (printf)
 
-runCompairing :: Int -> StdGen -> IO (Double, Double)
-runCompairing nodeN g = do
+runCompairing :: Int -> Int -> StdGen -> IO ()
+runCompairing nodeN procN g = do
 
     -- Graph generation
     let arcN = nodeN*nodeN `div` 4
@@ -36,13 +36,16 @@ runCompairing nodeN g = do
 
     -- Parallel Bellman-Ford algorythm
     parallelStartTime <- getCurrentTime
-    let parallelSol = bellmanFordParralel 4 graph 1
+    let parallelSol = bellmanFordParralel procN graph 1
     parallelEndTime <- deepseq parallelSol getCurrentTime
     
     let parallelDuration = diffUTCTime parallelEndTime parallelStartTime 
 
+    let speedUp = (realToFrac serialDuration :: Double) / (realToFrac parallelDuration :: Double)
+
     -- Outputs
     printf $ "Graph generation: " ++ show genDuration ++ "\n"
     printf $ "Serial " ++ show serialDuration ++ "    Parallel " ++ show parallelDuration ++ "\n"
+    printf $ "SpeedUp: " ++ show speedUp ++ "\n"
 
-    return (realToFrac serialDuration :: Double, realToFrac parallelDuration :: Double)
+    return ()
