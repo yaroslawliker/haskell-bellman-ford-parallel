@@ -76,7 +76,7 @@ If you do so, make sure to read Set up section of this README first.
 | 300 | 22500 | 1.188429897s | 7.467625416s | 3.748199342s | 1.99 |  
 
 ### Conclusion
-For all experiments the speedUp is bigger on medium data (100 nodes).
+For all experiments the speedUp is biggest on medium data (100 nodes).
 The bigger speedUp is with use of 4 processors on medium data.
 
 
